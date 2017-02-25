@@ -11,14 +11,12 @@
 <BorderPane fx:controller="controllers.Controller"
             xmlns:fx="http://javafx.com/fxml" >
     <left >
-        <GridPane style="-fx-background-color: gray">
+        <GridPane style="-fx-background-color: gray" vgap="20">
             <padding>
-                <Insets top="10" left="10" right="10"></Insets>
+                <Insets top="10" left="10" right="10" bottom="10"></Insets>
             </padding>
             <Label text="Select indicators:" GridPane.rowIndex="0" GridPane.columnIndex="0"></Label>
-            <Label  GridPane.rowIndex="1" GridPane.columnIndex="0"></Label>
-
-            <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="0">
+            <HBox spacing="10" GridPane.rowIndex="1" GridPane.columnIndex="0">
                 <VBox  spacing="10" >
                     <CheckBox fx:id="chb_20" text="20" />
                     <CheckBox fx:id="chb_50" text="50" />
@@ -29,14 +27,12 @@
                 </VBox>
             </HBox>
 
-            <Label  GridPane.rowIndex="3" GridPane.columnIndex="0"></Label>
-            <Label  GridPane.rowIndex="4" GridPane.columnIndex="0"></Label>
-            <Button text="Predict"  onAction="#clickPredictBtn" GridPane.rowIndex="5" GridPane.columnIndex="0"></Button>
+            <Button text="Predict"  onAction="#onClickPredictBtn" GridPane.rowIndex="2" GridPane.columnIndex="0"></Button>
         </GridPane>
     </left>
     <center>
-        <GridPane style="-fx-background-color: azure">
-            <Label fx:id="lbResult" GridPane.rowIndex="2" GridPane.columnIndex="0"></Label>
+        <GridPane fx:id="gpResult" style="-fx-background-color: azure">
+                <Label fx:id="lbResult" GridPane.rowIndex="2" GridPane.columnIndex="0"></Label>
         </GridPane>
     </center>
 </BorderPane>
