@@ -54,7 +54,7 @@ Stock()
 public TreeMap<Date,Double> getStockFromCsv(String fileName){
 
 	//TO Store Key as date and value as price
-	TreeMap<Date,Double> sorted = new TreeMap<Date,Double>();
+	TreeMap<Date,Double> stockKeyValuePair= new TreeMap<Date,Double>();
 
 			
 	try {
@@ -67,7 +67,7 @@ public TreeMap<Date,Double> getStockFromCsv(String fileName){
 					date = (Date)formatter.parse(newLine[0]);				
 			
 				  //Add Date and Price to tree map			   
-				   sorted.put(date, Double.parseDouble(newLine[4]));
+				   stockKeyValuePair.put(date, Double.parseDouble(newLine[4]));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -78,7 +78,7 @@ public TreeMap<Date,Double> getStockFromCsv(String fileName){
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
-	 return  sorted;
+	 return  stockKeyValuePair;
     }
 }
 
