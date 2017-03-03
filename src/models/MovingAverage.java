@@ -3,20 +3,19 @@ package models;
 /**
  * Created by hamideh on 24/02/2017.
  */
-import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.*;
 
 public class MovingAverage {
-    public ArrayList<Pair> numberSeries;
-    public ArrayList<Pair> avgSeries;
-    public int indicator; //window size
+    private int indicator; //window size
+    private TreeMap <Date, Double> numberSeries;
+    private TreeMap <Date, Double> avgSeries;
 
     //getters and setters
-    public ArrayList<Pair> getNumberSeries() {
+    public TreeMap <Date, Double> getNumberSeries() {
         return numberSeries;
     }
 
-    public void setNumberSeries(ArrayList<Pair> numberSeries) {
+    public void setNumberSeries(TreeMap <Date, Double> numberSeries) {
         this.numberSeries = numberSeries;
     }
 
@@ -28,15 +27,15 @@ public class MovingAverage {
         this.indicator = indicator;
     }
 
-    public ArrayList<Pair> getAvgSeries() {
+    public TreeMap <Date, Double> getAvgSeries() {
         return avgSeries;
     }
 
     //constructor
-    public MovingAverage(ArrayList<Pair> numberSeries, int indicator) {
+    public MovingAverage(TreeMap <Date, Double> numberSeries, int indicator) {
         this.numberSeries = numberSeries;
         this.indicator = indicator;
-        this.avgSeries = new ArrayList<Pair>();
+        this.avgSeries = new TreeMap<>();
         calculateMovingAverage();
     }
 
@@ -46,18 +45,19 @@ public class MovingAverage {
      * @return double average
      */
     public void calculateMovingAverage(){
-        ArrayDeque<Double> windowSeries = new ArrayDeque<Double>(indicator);
+        ArrayDeque<Double> windowSeries = new ArrayDeque<>(indicator);
 
-        for (int i = 0 ; i < numberSeries.size() ; i++){
-            if (i < indicator)
-                windowSeries.add(numberSeries.get(i).getValue());
+        int i = 1;
+        for (Map.Entry<Date, Double> entry : numberSeries.entrySet()){
+            if (i <= indicator)
+                windowSeries.add(entry.getValue());
             else{
                 windowSeries.removeFirst();
-                windowSeries.offerLast(numberSeries.get(i).getValue());
+                windowSeries.offerLast(entry.getValue());
             }
-            if (i >= (indicator-1)){
-                avgSeries.add(new Pair(numberSeries.get(i).getKey() , calculateAverage(windowSeries)));
-            }
+            if (i > indicator)
+                avgSeries.put(entry.getKey() , calculateAverage(windowSeries));
+            i++;
         }
     }
 
@@ -73,5 +73,4 @@ public class MovingAverage {
         avg /= windowSeries.size();
         return avg;
     }
-
 }
