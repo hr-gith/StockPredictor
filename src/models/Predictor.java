@@ -15,9 +15,13 @@ public class Predictor {
     private Stock stock;
     private ArrayList<Integer> indicators;
     private LinkedList<MovingAverage> movingAverageList;
+    private AreaChart<String, Number> movingAverageChart;
+    private String advice;
 
     //getters and setters
-
+    public String getAdvice() {
+        return advice;
+    }
     public Stock getStock() {
         return stock;
     }
@@ -39,8 +43,6 @@ public class Predictor {
     }
 
     public void setMovingAverageList(){
-        if (indicators.isEmpty())
-            return;
         movingAverageList = new LinkedList<>();
         for (int indicator : indicators)
             movingAverageList.add(new MovingAverage(stock.getPriceHistory(), indicator));
@@ -69,15 +71,15 @@ public class Predictor {
     }
 
     public AreaChart<String, Number> getMovingAverageChart(Date from, Date to ){
-        if (indicators.size() > 0 && (movingAverageList == null || movingAverageList.isEmpty())){
+        if (indicators.size() > 0 && movingAverageList.isEmpty()){
             setMovingAverageList();
         }
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("price");
-        AreaChart<String, Number> newChart = new AreaChart<>(xAxis, yAxis);
-        newChart.setTitle("Moving average chart");
+        movingAverageChart = new AreaChart<>(xAxis, yAxis);
+        movingAverageChart.setTitle("Moving average chart");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:mm:dd");
         for (MovingAverage ma:movingAverageList){
@@ -87,9 +89,9 @@ public class Predictor {
             for (Map.Entry<Date , Double> entry : subAvgSeries.entrySet()){
                 newSeries.getData().add(new XYChart.Data<>(dateFormat.format(entry.getKey()), entry.getValue()));
             }
-            newChart.getData().add(newSeries);
+            movingAverageChart.getData().add(newSeries);
         }
         //newChart.intersects()
-        return newChart;
+        return movingAverageChart;
     }
 }

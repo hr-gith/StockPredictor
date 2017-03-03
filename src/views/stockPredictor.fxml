@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.DatePicker?>
-<BorderPane fx:controller="controllers.Controller"
+<BorderPane fx:controller="controllers.PredictorController"
             xmlns:fx="http://javafx.com/fxml" >
     <left >
         <GridPane style="-fx-background-color: gray" vgap="20" hgap="10">
