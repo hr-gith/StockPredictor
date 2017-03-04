@@ -3,10 +3,7 @@ package models;
 /**
  * Created by hamideh on 24/02/2017.
  */
-import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,7 +12,7 @@ public class Predictor {
     private Stock stock;
     private ArrayList<Integer> indicators;
     private LinkedList<MovingAverage> movingAverageList;
-    private AreaChart<String, Number> movingAverageChart;
+    private LineChart<String, Number> movingAverageChart;
     private String advice;
 
     //getters and setters
@@ -70,7 +67,7 @@ public class Predictor {
         return null;
     }
 
-    public AreaChart<String, Number> getMovingAverageChart(Date from, Date to ){
+    public LineChart<String, Number> getMovingAverageChart(Date from, Date to ){
         if (indicators.size() > 0 && movingAverageList.isEmpty()){
             setMovingAverageList();
         }
@@ -78,7 +75,9 @@ public class Predictor {
         xAxis.setLabel("Date");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("price");
-        movingAverageChart = new AreaChart<>(xAxis, yAxis);
+        yAxis.setAutoRanging(true);
+        yAxis.setForceZeroInRange(false);
+        movingAverageChart = new LineChart<>(xAxis, yAxis);
         movingAverageChart.setTitle("Moving average chart");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:mm:dd");
@@ -86,11 +85,12 @@ public class Predictor {
             XYChart.Series<String, Number> newSeries = new XYChart.Series<>();
             newSeries.setName(Integer.toString(ma.getIndicator()));
             SortedMap<Date , Double> subAvgSeries = ma.getAvgSeries().subMap(from, to);
-            for (Map.Entry<Date , Double> entry : subAvgSeries.entrySet()){
+            for (Map.Entry<Date , Double> entry : subAvgSeries.entrySet()) {
                 newSeries.getData().add(new XYChart.Data<>(dateFormat.format(entry.getKey()), entry.getValue()));
             }
             movingAverageChart.getData().add(newSeries);
         }
+        movingAverageChart.setCreateSymbols(false);
         //newChart.intersects()
         return movingAverageChart;
     }

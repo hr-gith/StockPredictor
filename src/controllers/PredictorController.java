@@ -4,10 +4,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -103,7 +100,7 @@ public class PredictorController implements Initializable{
             lbErrorMsg.setText(errorMessage);
             return;
         }
-        AreaChart<String, Number> maChart = predictor.getMovingAverageChart(dateFrom, dateTo);
+        LineChart<String, Number> maChart = predictor.getMovingAverageChart(dateFrom, dateTo);
         if (maChart != null) {
             GridPane.setConstraints(maChart, 0, 0);
             gpResult.getChildren().add(maChart);
@@ -115,12 +112,14 @@ public class PredictorController implements Initializable{
         }
     }
 
-    private AreaChart<String, Number> createStockChart(){
+    private LineChart<String, Number> createStockChart(){
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("price");
-        AreaChart<String, Number> newChart = new AreaChart<>(xAxis, yAxis);
+        yAxis.setAutoRanging(true);
+        yAxis.setForceZeroInRange(false);
+        LineChart<String, Number> newChart = new LineChart<>(xAxis, yAxis);
         newChart.setTitle("Stock price chart");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
@@ -131,6 +130,7 @@ public class PredictorController implements Initializable{
             String str = dateFormat.format(entry.getKey());
             newSeries.getData().add(new XYChart.Data<>(str , entry.getValue()));
         }
+        newChart.setCreateSymbols(false);
         newChart.getData().add(newSeries);
         return newChart;
     }
@@ -142,7 +142,7 @@ public class PredictorController implements Initializable{
             lbErrorMsg.setText(errorMessage);
             return;
         }
-        AreaChart<String, Number> stockChart = createStockChart();
+        LineChart<String, Number> stockChart = createStockChart();
         if (stockChart != null) {
             gpResult.getChildren().add(stockChart);
             lbErrorMsg.setText("");
