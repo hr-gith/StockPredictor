@@ -105,8 +105,8 @@ public class PredictorController implements Initializable{
             GridPane.setConstraints(maChart, 0, 0);
             gpResult.getChildren().add(maChart);
             //TO-Do getAdvice should be created
-            String advice = "";
-            Label lbAdvice = new Label("Advice" + advice);
+            String advice = predictor.predict();
+            Label lbAdvice = new Label("  Advice: " + advice);
             GridPane.setConstraints(lbAdvice, 0, 2);
             gpResult.getChildren().add(lbAdvice);
         }

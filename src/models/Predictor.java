@@ -5,6 +5,7 @@ package models;
  */
 import javafx.scene.chart.*;
 
+import java.awt.geom.Line2D;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -13,12 +14,8 @@ public class Predictor {
     private ArrayList<Integer> indicators;
     private LinkedList<MovingAverage> movingAverageList;
     private LineChart<String, Number> movingAverageChart;
-    private String advice;
 
     //getters and setters
-    public String getAdvice() {
-        return advice;
-    }
     public Stock getStock() {
         return stock;
     }
@@ -39,7 +36,7 @@ public class Predictor {
         return movingAverageList;
     }
 
-    public void setMovingAverageList(){
+    private void setMovingAverageList(){
         movingAverageList = new LinkedList<>();
         for (int indicator : indicators)
             movingAverageList.add(new MovingAverage(stock.getPriceHistory(), indicator));
@@ -49,14 +46,13 @@ public class Predictor {
     public Predictor(Stock stock, ArrayList<Integer> indicators) {
         this.stock = stock;
         this.indicators = indicators;
-        setMovingAverageList();
     }
 
     /**
      * short term has the most priority
      * @return MovingAverage minMA
      */
-    public MovingAverage getPriority(){
+    private MovingAverage getPriority(){
         if (!movingAverageList.isEmpty()){
             MovingAverage minMA = movingAverageList.get(0);
             for (int i=0 ; i < movingAverageList.size() ; i++)
@@ -67,10 +63,75 @@ public class Predictor {
         return null;
     }
 
-    public LineChart<String, Number> getMovingAverageChart(Date from, Date to ){
-        if (indicators.size() > 0 && movingAverageList.isEmpty()){
-            setMovingAverageList();
+    private Date findLastIntersection(MovingAverage baseMA, MovingAverage otherMA){
+        if (baseMA.getAvgSeries().isEmpty() || otherMA.getAvgSeries().isEmpty())
+            return null;
+        Date currentDate = baseMA.getAvgSeries().lastKey();
+        Date nextDate = baseMA.getAvgSeries().lowerKey(currentDate);
+
+        while (nextDate != null){
+            if (Line2D.linesIntersect(0.0, baseMA.getAvgSeries().get(currentDate),
+                    1.0, baseMA.getAvgSeries().get(nextDate),
+                    0.0, otherMA.getAvgSeries().get(currentDate),
+                    1.0, otherMA.getAvgSeries().get(nextDate))){
+                //Intersection found
+                return nextDate;
+            }
+            currentDate = nextDate;
+            nextDate = baseMA.getAvgSeries().lowerKey(currentDate);
         }
+        return null;
+    }
+
+    public String predict(){
+        if (indicators.size() > 1) {
+            setMovingAverageList();
+            String advice = "";
+            MovingAverage priorityMA = getPriority();
+            MovingAverage otherMA;
+            Date predictionPoint = null;
+            for (int i = 0; i < movingAverageList.size(); i++) {
+                if (movingAverageList.get(i) != priorityMA) {
+                    otherMA = movingAverageList.get(i);
+                    Date intersectionDate = findLastIntersection(priorityMA, otherMA);
+                    if (predictionPoint == null || (intersectionDate != null && predictionPoint.compareTo(intersectionDate) == 1))
+                        predictionPoint = intersectionDate;
+                }
+            }
+            //if there is not any intersection
+            if (predictionPoint == null) {
+                advice = "Buy";
+                return advice;
+            }
+            //predict by checking if the MA with the most priority is going up or down
+            Double currentPrice;
+            Double nextPrice;
+            do {
+                if (predictionPoint == priorityMA.getAvgSeries().lastKey()) {
+                    advice = "Buy";
+                } else {
+                    currentPrice = priorityMA.getAvgSeries().get(predictionPoint);
+                    nextPrice = priorityMA.getAvgSeries().higherEntry(predictionPoint).getValue();
+                    if (currentPrice < nextPrice) {
+                        advice = "Buy";
+                    } else if (currentPrice > nextPrice) {
+                        advice = "Sell";
+                    } else {
+                        predictionPoint = priorityMA.getAvgSeries().higherKey(predictionPoint);
+                        if (predictionPoint == null)
+                            advice = "Buy";
+                    }
+                }
+            } while (advice == "");
+            return advice;
+        }else
+        return "More indicators needed to predict.";
+    }
+
+    public LineChart<String, Number> getMovingAverageChart(Date from, Date to ){
+        if (indicators.size() > 0)
+            setMovingAverageList();
+
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
         NumberAxis yAxis = new NumberAxis();
@@ -91,7 +152,7 @@ public class Predictor {
             movingAverageChart.getData().add(newSeries);
         }
         movingAverageChart.setCreateSymbols(false);
-        //newChart.intersects()
+        //movingAverageChart.intersects()
         return movingAverageChart;
     }
 }

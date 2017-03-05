@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TreeMap;
 import com.opencsv.CSVReader;
 
@@ -43,6 +44,19 @@ public class Stock {
 	public Stock()	{
 		name = "Stock Name";
 		priceHistory = getStockFromCsv("Sample data.csv");
+		/* // fake data for test
+		//2.0 4.0 6.0 2.0 2.0 2.0 2.0 3.0
+		//3.5 3.5 3.0 2.0 2.25
+		priceHistory = new TreeMap<>();
+		priceHistory.put(new GregorianCalendar(2016, 3, 1).getTime(), 2.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 2).getTime(), 4.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 4).getTime(), 6.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 6).getTime(), 2.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 11).getTime(), 2.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 19).getTime(), 2.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 20).getTime(), 2.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 21).getTime(), 3.0 );
+		priceHistory.put(new GregorianCalendar(2016, 3, 26).getTime(), 7.0 );*/
 	}
 
 	public TreeMap<Date,Double> getStockFromCsv(String fileName){

@@ -55,7 +55,7 @@ public class MovingAverage {
                 windowSeries.removeFirst();
                 windowSeries.offerLast(entry.getValue());
             }
-            if (i > indicator)
+            if (i >= indicator)
                 avgSeries.put(entry.getKey() , calculateAverage(windowSeries));
             i++;
         }
