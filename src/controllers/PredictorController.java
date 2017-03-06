@@ -1,6 +1,5 @@
 package controllers;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,18 +12,16 @@ import models.Predictor;
 import models.Stock;
 
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PredictorController implements Initializable{
     public Stock currentStock;
     public Predictor predictor;
     public String errorMessage;
-    public Date dateFrom;
-    public Date dateTo;
+    public LocalDate dateFrom;
+    public LocalDate dateTo;
 
     @FXML
     private DatePicker datePickerFrom;
@@ -78,15 +75,10 @@ public class PredictorController implements Initializable{
             errorMessage = "Please select a valid range of dates.\r\n";
             return false;
         }
-        LocalDate localDate = datePickerFrom.getValue();
-        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-        dateFrom = Date.from(instant);
+        dateFrom = datePickerFrom.getValue();
+        dateTo = datePickerTo.getValue();
 
-        localDate = datePickerTo.getValue();
-        instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-        dateTo = Date.from(instant);
-
-        if (dateTo.compareTo(dateFrom) != 1){
+        if ( dateTo.compareTo(dateFrom) <= 0){
             errorMessage = "Please select a valid range of dates.\r\n";
             return false;
         }
@@ -122,13 +114,18 @@ public class PredictorController implements Initializable{
         LineChart<String, Number> newChart = new LineChart<>(xAxis, yAxis);
         newChart.setTitle("Stock price chart");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
         XYChart.Series<String, Number> newSeries = new XYChart.Series<>();
         newSeries.setName(currentStock.getName() + " price history");
-        SortedMap<Date , Double> subPriceHistory = currentStock.getPriceHistory().subMap(dateFrom, dateTo);
-        for (Map.Entry<Date, Double> entry:subPriceHistory.entrySet()){
-            String str = dateFormat.format(entry.getKey());
-            newSeries.getData().add(new XYChart.Data<>(str , entry.getValue()));
+        SortedMap<LocalDate , Double> subPriceHistory = currentStock.getPriceHistory().subMap(dateFrom, dateTo);
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-mm-dd");
+        int year, month, day;
+        for (Map.Entry<LocalDate, Double> entry:subPriceHistory.entrySet()){
+            month = entry.getKey().getMonth().getValue();
+            day = entry.getKey().getDayOfMonth();
+            year = entry.getKey().getYear();
+            String strDate = Integer.toString(year) + "-" + Integer.toString(month) + "-" + Integer.toString(day);
+            //String str = entry.getKey().format(formatter);
+            newSeries.getData().add(new XYChart.Data<>(strDate , entry.getValue()));
         }
         newChart.setCreateSymbols(false);
         newChart.getData().add(newSeries);
