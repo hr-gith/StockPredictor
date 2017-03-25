@@ -1,14 +1,12 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.GridPane?>
-
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ComboBox?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<?import javafx.scene.layout.HBox?>
 <BorderPane fx:controller="controllers.PredictorController"
             xmlns:fx="http://javafx.com/fxml" >
     <top>
@@ -34,10 +32,12 @@
         <GridPane fx:id="gpResult" style="-fx-background-color: azure" vgap="20"></GridPane>
     </center>
     <right>
+        <!-- watch list-->
         <GridPane style="-fx-background-color: gray; -fx-pref-width: 300" vgap="20" hgap="10">
             <padding>
                 <Insets left="10" right="10" bottom="10" top="10"/>
             </padding>
+
         </GridPane>
     </right>
 </BorderPane>
