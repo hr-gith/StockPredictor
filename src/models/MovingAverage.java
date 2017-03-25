@@ -3,19 +3,20 @@ package models;
 /**
  * Created by hamideh on 24/02/2017.
  */
+import java.time.LocalDate;
 import java.util.*;
 
 public class MovingAverage {
     private int indicator; //window size
-    private TreeMap <Date, Double> numberSeries;
-    private TreeMap <Date, Double> avgSeries;
+    private TreeMap <LocalDate, Double> numberSeries;
+    private TreeMap <LocalDate, Double> avgSeries;
 
     //getters and setters
-    public TreeMap <Date, Double> getNumberSeries() {
+    public TreeMap <LocalDate, Double> getNumberSeries() {
         return numberSeries;
     }
 
-    public void setNumberSeries(TreeMap <Date, Double> numberSeries) {
+    public void setNumberSeries(TreeMap <LocalDate, Double> numberSeries) {
         this.numberSeries = numberSeries;
     }
 
@@ -27,12 +28,12 @@ public class MovingAverage {
         this.indicator = indicator;
     }
 
-    public TreeMap <Date, Double> getAvgSeries() {
+    public TreeMap <LocalDate, Double> getAvgSeries() {
         return avgSeries;
     }
 
     //constructor
-    public MovingAverage(TreeMap <Date, Double> numberSeries, int indicator) {
+    public MovingAverage(TreeMap <LocalDate, Double> numberSeries, int indicator) {
         this.numberSeries = numberSeries;
         this.indicator = indicator;
         this.avgSeries = new TreeMap<>();
@@ -48,7 +49,7 @@ public class MovingAverage {
         ArrayDeque<Double> windowSeries = new ArrayDeque<>(indicator);
 
         int i = 1;
-        for (Map.Entry<Date, Double> entry : numberSeries.entrySet()){
+        for (Map.Entry<LocalDate, Double> entry : numberSeries.entrySet()){
             if (i <= indicator)
                 windowSeries.add(entry.getValue());
             else{

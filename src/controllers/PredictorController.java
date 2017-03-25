@@ -1,19 +1,23 @@
 package controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import models.Predictor;
 import models.Stock;
+import org.controlsfx.control.CheckComboBox;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PredictorController implements Initializable{
@@ -22,6 +26,9 @@ public class PredictorController implements Initializable{
     public String errorMessage;
     public LocalDate dateFrom;
     public LocalDate dateTo;
+    public ObservableList<Integer> indicators ;
+    public ObservableList<Integer> selectedIndicators;
+
 
     @FXML
     private DatePicker datePickerFrom;
@@ -32,19 +39,26 @@ public class PredictorController implements Initializable{
     @FXML
     private Label lbErrorMsg;
     @FXML
-    private CheckBox chb_20;
+    private CheckComboBox<Integer> Chcb_indicators;
     @FXML
-    private CheckBox chb_50;
-    @FXML
-    private CheckBox chb_100;
-    @FXML
-    private CheckBox chb_200;
+    private ComboBox<String> Cb_stocks;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         currentStock = new Stock();
         predictor = new Predictor(currentStock, new ArrayList<>());
         errorMessage = "";
+
+        indicators = FXCollections.observableArrayList();
+        selectedIndicators = FXCollections.observableArrayList();
+        indicators.addAll(20,50,100,200);
+        Chcb_indicators.getItems().addAll(indicators);
+        Chcb_indicators.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
+            public void onChanged(ListChangeListener.Change c) {
+                selectedIndicators = Chcb_indicators.getCheckModel().getCheckedItems();
+                updatePrediction();
+            }
+        });
     }
 
     public void refreshPredictorPage(){
@@ -54,18 +68,15 @@ public class PredictorController implements Initializable{
     }
 
     public boolean setAndValidateIndicators(){
-        predictor.getIndicators().clear();
-        if (chb_20.isSelected())
-            predictor.getIndicators().add(20);
-        if (chb_50.isSelected())
-            predictor.getIndicators().add(50);
-        if (chb_100.isSelected())
-            predictor.getIndicators().add(100);
-        if (chb_200.isSelected())
-            predictor.getIndicators().add(200);
-        if (predictor.getIndicators().size() < 2) {
+        int nbIndicators = selectedIndicators.size();
+        if (selectedIndicators.isEmpty() || nbIndicators == 1){
             errorMessage += "Error: Please select at least two indicators.\r\n";
             return false;
+        }
+
+        predictor.getIndicators().clear();
+        for(int i = 0 ; i < nbIndicators ; i++){
+            predictor.getIndicators().add(selectedIndicators.get(i));
         }
         return true;
     }
@@ -86,7 +97,11 @@ public class PredictorController implements Initializable{
     }
 
     @FXML
-    public void onClickPredictBtn(ActionEvent e){
+    public void onChangeStockCb(ActionEvent e){
+        updatePrediction();
+    }
+
+    public void updatePrediction(){
         refreshPredictorPage();
         if (!setAndValidateIndicators() || !setAndValidateDateRange() || currentStock == null){
             lbErrorMsg.setText(errorMessage);
@@ -94,12 +109,12 @@ public class PredictorController implements Initializable{
         }
         LineChart<String, Number> maChart = predictor.getMovingAverageChart(dateFrom, dateTo);
         if (maChart != null) {
-            GridPane.setConstraints(maChart, 0, 0);
+            gpResult.setConstraints(maChart, 0, 0);
             gpResult.getChildren().add(maChart);
             //TO-Do getAdvice should be created
             String advice = predictor.predict();
             Label lbAdvice = new Label("  Advice: " + advice);
-            GridPane.setConstraints(lbAdvice, 0, 2);
+            gpResult.setConstraints(lbAdvice, 0, 2);
             gpResult.getChildren().add(lbAdvice);
         }
     }

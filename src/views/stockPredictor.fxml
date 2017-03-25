@@ -2,44 +2,42 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.GridPane?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
+<?import org.controlsfx.control.CheckComboBox?>
+
+<?import javafx.scene.layout.HBox?>
 <BorderPane fx:controller="controllers.PredictorController"
             xmlns:fx="http://javafx.com/fxml" >
-    <left >
-        <GridPane style="-fx-background-color: gray" vgap="20" hgap="10">
+    <top>
+        <GridPane style="-fx-background-color: lightgray" vgap="10" hgap="15">
             <padding>
                 <Insets top="10" left="10" right="10" bottom="10"></Insets>
             </padding>
 
-            <Label text="Stock-Name" GridPane.rowIndex="0" GridPane.columnIndex="0"></Label>
+            <Label text="Stock:" GridPane.rowIndex="0" GridPane.columnIndex="0"></Label>
+            <ComboBox onAction="#onChangeStockCb" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label text="Indicators:" GridPane.rowIndex="0" GridPane.columnIndex="1"></Label>
+            <CheckComboBox fx:id="Chcb_indicators" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="1"></CheckComboBox>
 
-            <!--display stock chart + select date range-->
-            <Label text="From date: " GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <DatePicker fx:id="datePickerFrom" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            <Label text="To date: " GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <DatePicker fx:id="datePickerTo" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="From: " GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+            <DatePicker fx:id="datePickerFrom" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+            <Label text="To: " GridPane.rowIndex="0" GridPane.columnIndex="4"/>
+            <DatePicker fx:id="datePickerTo" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
 
-            <!--predict part + display moving average chart-->
-            <Label text="Select indicators:" GridPane.rowIndex="5" GridPane.columnIndex="0"></Label>
-            <VBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="0">
-                <CheckBox fx:id="chb_20" text="20" />
-                <CheckBox fx:id="chb_50" text="50" />
-            </VBox>
-            <VBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
-                <CheckBox fx:id="chb_100" text="100" />
-                <CheckBox fx:id="chb_200" text="200" />
-            </VBox>
-            <Button text="Predict" onAction="#onClickPredictBtn" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
-            <Button text="Display chart" onAction="#onClickDisplayChartBtn" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-            <Label fx:id="lbErrorMsg" textFill="red" GridPane.rowIndex="11" GridPane.columnIndex="0" GridPane.columnSpan="2"/>
+            <Label fx:id="lbErrorMsg" textFill="red" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="4"/>
         </GridPane>
-    </left>
+    </top>
     <center>
         <GridPane fx:id="gpResult" style="-fx-background-color: azure" vgap="20"></GridPane>
     </center>
+    <right>
+        <GridPane style="-fx-background-color: gray; -fx-pref-width: 300" vgap="20" hgap="10">
+            <padding>
+                <Insets left="10" right="10" bottom="10" top="10"/>
+            </padding>
+        </GridPane>
+    </right>
 </BorderPane>

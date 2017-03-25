@@ -7,6 +7,7 @@ import javafx.scene.chart.*;
 
 import java.awt.geom.Line2D;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Predictor {
@@ -63,11 +64,11 @@ public class Predictor {
         return null;
     }
 
-    private Date findLastIntersection(MovingAverage baseMA, MovingAverage otherMA){
+    private LocalDate findLastIntersection(MovingAverage baseMA, MovingAverage otherMA){
         if (baseMA.getAvgSeries().isEmpty() || otherMA.getAvgSeries().isEmpty())
             return null;
-        Date currentDate = baseMA.getAvgSeries().lastKey();
-        Date nextDate = baseMA.getAvgSeries().lowerKey(currentDate);
+        LocalDate currentDate = baseMA.getAvgSeries().lastKey();
+        LocalDate nextDate = baseMA.getAvgSeries().lowerKey(currentDate);
 
         while (nextDate != null){
             if (Line2D.linesIntersect(0.0, baseMA.getAvgSeries().get(currentDate),
@@ -89,11 +90,11 @@ public class Predictor {
             String advice = "";
             MovingAverage priorityMA = getPriority();
             MovingAverage otherMA;
-            Date predictionPoint = null;
+            LocalDate predictionPoint = null;
             for (int i = 0; i < movingAverageList.size(); i++) {
                 if (movingAverageList.get(i) != priorityMA) {
                     otherMA = movingAverageList.get(i);
-                    Date intersectionDate = findLastIntersection(priorityMA, otherMA);
+                    LocalDate intersectionDate = findLastIntersection(priorityMA, otherMA);
                     if (predictionPoint == null || (intersectionDate != null && predictionPoint.compareTo(intersectionDate) == 1))
                         predictionPoint = intersectionDate;
                 }
@@ -125,10 +126,10 @@ public class Predictor {
             } while (advice == "");
             return advice;
         }else
-        return "More indicators needed to predict.";
+            return "More indicators needed to predict.";
     }
 
-    public LineChart<String, Number> getMovingAverageChart(Date from, Date to ){
+    public LineChart<String, Number> getMovingAverageChart(LocalDate from, LocalDate to ){
         if (indicators.size() > 0)
             setMovingAverageList();
 
@@ -145,14 +146,19 @@ public class Predictor {
         for (MovingAverage ma:movingAverageList){
             XYChart.Series<String, Number> newSeries = new XYChart.Series<>();
             newSeries.setName(Integer.toString(ma.getIndicator()));
-            SortedMap<Date , Double> subAvgSeries = ma.getAvgSeries().subMap(from, to);
-            for (Map.Entry<Date , Double> entry : subAvgSeries.entrySet()) {
-                newSeries.getData().add(new XYChart.Data<>(dateFormat.format(entry.getKey()), entry.getValue()));
+            SortedMap<LocalDate , Double> subAvgSeries = ma.getAvgSeries().subMap(from, to);
+            int month, day, year;
+            for (Map.Entry<LocalDate , Double> entry : subAvgSeries.entrySet()) {
+                month = entry.getKey().getMonth().getValue();
+                day = entry.getKey().getDayOfMonth();
+                year = entry.getKey().getYear();
+                String strDate = Integer.toString(year) + "-" + Integer.toString(month) + "-" + Integer.toString(day);
+
+                newSeries.getData().add(new XYChart.Data<>(strDate, entry.getValue()));
             }
             movingAverageChart.getData().add(newSeries);
         }
         movingAverageChart.setCreateSymbols(false);
-        //movingAverageChart.intersects()
         return movingAverageChart;
     }
 }
