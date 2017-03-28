@@ -1,10 +1,11 @@
 package controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
@@ -28,7 +29,7 @@ public class PredictorController implements Initializable{
     public LocalDate dateTo;
     public ObservableList<Integer> indicators ;
     public ObservableList<Integer> selectedIndicators;
-
+    public HashMap<String, String> stocksDOW;
 
     @FXML
     private DatePicker datePickerFrom;
@@ -39,26 +40,45 @@ public class PredictorController implements Initializable{
     @FXML
     private Label lbErrorMsg;
     @FXML
-    private CheckComboBox<Integer> Chcb_indicators;
+    private CheckComboBox<Integer> chCb_indicators;
     @FXML
-    private ComboBox<String> Cb_stocks;
+    private ComboBox<String> cob_stocks;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        currentStock = new Stock();
-        predictor = new Predictor(currentStock, new ArrayList<>());
         errorMessage = "";
 
+        //initializing Indicators
         indicators = FXCollections.observableArrayList();
-        selectedIndicators = FXCollections.observableArrayList();
         indicators.addAll(20,50,100,200);
-        Chcb_indicators.getItems().addAll(indicators);
-        Chcb_indicators.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
+        chCb_indicators.getItems().addAll(indicators);
+        chCb_indicators.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
             public void onChanged(ListChangeListener.Change c) {
-                selectedIndicators = Chcb_indicators.getCheckModel().getCheckedItems();
                 updatePrediction();
             }
         });
+
+        //initializing DOW 30 Stocks
+        setDowStocks();
+        List<String> stockList= new ArrayList<>();
+        String str;
+        for (Map.Entry<String, String> entry : stocksDOW.entrySet()) {
+            str = String.format("%-10s", entry.getKey());
+            stockList.add(str + entry.getValue().trim());
+        }
+        cob_stocks.getItems().addAll(stockList);
+        cob_stocks.setVisibleRowCount(4);
+        cob_stocks.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                updatePrediction();
+            }
+        });
+    }
+
+    @FXML
+    public void onChangeDateRange(ActionEvent e){
+        updatePrediction();
     }
 
     public void refreshPredictorPage(){
@@ -67,6 +87,39 @@ public class PredictorController implements Initializable{
         errorMessage = "";
     }
 
+    public void setDowStocks(){
+        stocksDOW = new HashMap<>();
+        stocksDOW.put("Apple" , "AAPL");
+        stocksDOW.put("AXP" , "American Express");
+        stocksDOW.put("BA" , "Boeing");
+        stocksDOW.put("CAT" , "Caterpillar");
+        stocksDOW.put("CSCO" , "Cisco Systems");
+        stocksDOW.put("CVX" , "Chevron");
+        stocksDOW.put("KO" , "Coca-Cola");
+        stocksDOW.put("DD" , "DuPont");
+        stocksDOW.put("XOM" , "ExxonMobil");
+        stocksDOW.put("GE" , "General Electric");
+        stocksDOW.put("GS" , "Goldman Sachs");
+        stocksDOW.put("HD" , "Home Depot");
+        stocksDOW.put("IBM" , "IBM");
+        stocksDOW.put("INTC" , "Intel");
+        stocksDOW.put("JNJ" , "Johnson & Johnson");
+        stocksDOW.put("JPM" , "JPMorgan Chase");
+        stocksDOW.put("MCD" , "McDonald's");
+        stocksDOW.put("MMM" , "3M Company");
+        stocksDOW.put("MRK" , "Merck");
+        stocksDOW.put("MSFT" , "Microsoft");
+        stocksDOW.put("NKE" , "Nike");
+        stocksDOW.put("PFE" , "Pfizer");
+        stocksDOW.put("PG" , "Procter & Gamble");
+        stocksDOW.put("TRV" , "The Travelers");
+        stocksDOW.put("UNH" , "UnitedHealth");
+        stocksDOW.put("UTX" , "United Technologies");
+        stocksDOW.put("V" , "Visa");
+        stocksDOW.put("VZ" , "Verizon");
+        stocksDOW.put("WMT" , "Wal-Mart");
+        stocksDOW.put("DIS" , "Walt Disney");
+    }
     public boolean setAndValidateIndicators(){
         int nbIndicators = selectedIndicators.size();
         if (selectedIndicators.isEmpty() || nbIndicators == 1){
@@ -96,17 +149,25 @@ public class PredictorController implements Initializable{
         return true;
     }
 
-    @FXML
-    public void onChangeStockCb(ActionEvent e){
-        updatePrediction();
+    public void setCurrentStock(){
+        String[] stockInfo = cob_stocks.getSelectionModel().getSelectedItem().split(" +");
+        if (stockInfo.length != 0)
+            currentStock = new Stock(stockInfo[0] , stockInfo[1]);
+        else
+            currentStock = null;
     }
 
     public void updatePrediction(){
         refreshPredictorPage();
+        setCurrentStock();
+        selectedIndicators = chCb_indicators.getCheckModel().getCheckedItems();
+        predictor = new Predictor(currentStock, new ArrayList<>());
+
         if (!setAndValidateIndicators() || !setAndValidateDateRange() || currentStock == null){
             lbErrorMsg.setText(errorMessage);
             return;
         }
+
         LineChart<String, Number> maChart = predictor.getMovingAverageChart(dateFrom, dateTo);
         if (maChart != null) {
             gpResult.setConstraints(maChart, 0, 0);
