@@ -3,18 +3,15 @@ package models;
 /**
  * Created by hamideh on 24/02/2017.
  */
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import com.opencsv.CSVReader;
 
 public class Stock {
 	private String name ;
+	private String symbol;
 	private Double price ;
 	private TreeMap<LocalDate,Double> priceHistory ;
+	private StockInfoStrategy strategy;
 
 	public String getName() {
 		return name;
@@ -22,6 +19,14 @@ public class Stock {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 
 	public Double getPrice() {
@@ -40,30 +45,14 @@ public class Stock {
 		this.priceHistory = priceHistory;
 	}
 
-	public Stock()	{
-		name = "Stock Name";
-		priceHistory = getStockFromCsv("Sample data.csv");
+	public void setStrategy(StockInfoStrategy strategy){
+		this.strategy = strategy;
 	}
-
-	public TreeMap<LocalDate,Double> getStockFromCsv(String fileName){
-
-		//TO Store Key as date and value as price
-		TreeMap<LocalDate,Double> stockKeyValuePair= new TreeMap<LocalDate,Double>();
-		try {
-			CSVReader reader = new CSVReader(new FileReader(fileName));
-
-			String[] newLine = reader.readNext();
-			LocalDate date;
-			while ((newLine = reader.readNext())!=null) {
-					date = LocalDate.parse(newLine[0].trim());
-					//Add Date and Price to tree map
-					stockKeyValuePair.put(date, Double.parseDouble(newLine[4]));
-			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return  stockKeyValuePair;
+	public Stock(String name, String symbol, StockInfoStrategy strategy)	{
+		this.name = name;
+		this.symbol = symbol;
+		this.strategy = strategy;
+		priceHistory = strategy.getData(name, symbol);
 	}
 }
 

@@ -16,14 +16,14 @@
             </padding>
 
             <Label text="Stock:" GridPane.rowIndex="0" GridPane.columnIndex="0"></Label>
-            <ComboBox onAction="#onChangeStockCb" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="cob_stocks" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <Label text="Indicators:" GridPane.rowIndex="0" GridPane.columnIndex="1"></Label>
-            <CheckComboBox fx:id="Chcb_indicators" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="1"></CheckComboBox>
+            <CheckComboBox fx:id="chCb_indicators" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="1"></CheckComboBox>
 
             <Label text="From: " GridPane.rowIndex="0" GridPane.columnIndex="3"/>
-            <DatePicker fx:id="datePickerFrom" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+            <DatePicker fx:id="datePickerFrom" onAction="#onChangeDateRange" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
             <Label text="To: " GridPane.rowIndex="0" GridPane.columnIndex="4"/>
-            <DatePicker fx:id="datePickerTo" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
+            <DatePicker fx:id="datePickerTo" onAction="#onChangeDateRange" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
 
             <Label fx:id="lbErrorMsg" textFill="red" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="4"/>
         </GridPane>

@@ -8,6 +8,7 @@ import javafx.scene.chart.*;
 import java.awt.geom.Line2D;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Predictor {
@@ -142,22 +143,29 @@ public class Predictor {
         movingAverageChart = new LineChart<>(xAxis, yAxis);
         movingAverageChart.setTitle("Moving average chart");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:mm:dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LL yyyy");
         for (MovingAverage ma:movingAverageList){
             XYChart.Series<String, Number> newSeries = new XYChart.Series<>();
             newSeries.setName(Integer.toString(ma.getIndicator()));
             SortedMap<LocalDate , Double> subAvgSeries = ma.getAvgSeries().subMap(from, to);
-            int month, day, year;
-            for (Map.Entry<LocalDate , Double> entry : subAvgSeries.entrySet()) {
-                month = entry.getKey().getMonth().getValue();
-                day = entry.getKey().getDayOfMonth();
-                year = entry.getKey().getYear();
-                String strDate = Integer.toString(year) + "-" + Integer.toString(month) + "-" + Integer.toString(day);
 
+            for (Map.Entry<LocalDate , Double> entry : subAvgSeries.entrySet()) {
+                String strDate = entry.getKey().format(formatter);
                 newSeries.getData().add(new XYChart.Data<>(strDate, entry.getValue()));
             }
             movingAverageChart.getData().add(newSeries);
         }
+        // display price history in the MA chart
+        XYChart.Series<String, Number> newSeries = new XYChart.Series<>();
+        newSeries.setName("Price History");
+        SortedMap<LocalDate , Double> subPriceHistory = stock.getPriceHistory().subMap(from, to);
+
+        for (Map.Entry<LocalDate, Double> entry:subPriceHistory.entrySet()){
+            String strDate = entry.getKey().format(formatter);
+            newSeries.getData().add(new XYChart.Data<>(strDate , entry.getValue()));
+        }
+        //movingAverageChart.setCreateSymbols(false);
+        movingAverageChart.getData().add(newSeries);
         movingAverageChart.setCreateSymbols(false);
         return movingAverageChart;
     }

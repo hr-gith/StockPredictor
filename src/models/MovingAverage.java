@@ -42,8 +42,6 @@ public class MovingAverage {
 
     /**
      * calculates moving average of numberSeries and set the result in avgSeries
-     * @param ArrayDeque<Double> windowSeries
-     * @return double average
      */
     public void calculateMovingAverage(){
         ArrayDeque<Double> windowSeries = new ArrayDeque<>(indicator);
