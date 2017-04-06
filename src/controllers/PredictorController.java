@@ -13,11 +13,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import models.CSVStockInfoStrategy;
-import models.Predictor;
-import models.Stock;
-import models.YahooAPIStockInfoStrategy;
+import models.*;
 import org.controlsfx.control.CheckComboBox;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.cell.ComboBoxListCell;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -32,6 +33,8 @@ public class PredictorController implements Initializable{
     public ObservableList<Integer> indicators ;
     public ObservableList<Integer> selectedIndicators;
     public HashMap<String, String> stocksDOW;
+    public ObservableList<String> stockWatchList ;
+    public ObservableList<String> selectedStockWatchList;
 
     @FXML
     private DatePicker datePickerFrom;
@@ -45,6 +48,11 @@ public class PredictorController implements Initializable{
     private CheckComboBox<Integer> chCb_indicators;
     @FXML
     private ComboBox<String> cob_stocks;
+    @FXML
+    private CheckComboBox<String> chCb_StockList;
+    @FXML
+    private ListView listView;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,6 +65,22 @@ public class PredictorController implements Initializable{
         chCb_indicators.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
             public void onChanged(ListChangeListener.Change c) {
                 updatePredictionPage();
+            }
+        });
+
+        //initializing stock watch list
+        stockWatchList = FXCollections.observableArrayList();
+        List<String> list = new ArrayList<String>();
+        stockWatchList.addAll("Apple","American Express","Boeing","Caterpillar","Cisco Systems","Chevron","Coca-Cola",
+                "DuPont","ExxonMobil","General Electric","Goldman Sachs","Home Depot","IBM","Intel","Johnson & Johnson",
+                "JPMorgan Chase","McDonald's","3M Company","Merck","Microsoft","Nike","Pfizer","Procter & Gamble","The Travelers",
+                "UnitedHealth","United Technologies","Visa","Verizon","Wal-Mart","Walt Disney");
+
+        ObservableList<String> observableList = FXCollections.observableList(list);
+        chCb_StockList.getItems().addAll(stockWatchList);
+        chCb_StockList.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
+            public void onChanged(ListChangeListener.Change c) {
+                updateStockListSection();
             }
         });
 
@@ -161,6 +185,13 @@ public class PredictorController implements Initializable{
             currentStock = null;
     }
 
+    public void updateStockListSection(){
+        selectedStockWatchList = chCb_StockList.getCheckModel().getCheckedItems();
+        listView.setItems(selectedStockWatchList);
+        listView.setCellFactory(ComboBoxListCell.forListView(selectedStockWatchList));
+
+    }
+
     public void updatePredictionPage(){
         refreshPredictionPage();
         setCurrentStock();
@@ -182,5 +213,12 @@ public class PredictorController implements Initializable{
             gpResult.setConstraints(lbAdvice, 0, 2);
             gpResult.getChildren().add(lbAdvice);
         }
+    }
+
+    public boolean saveToJson(){
+        selectedStockWatchList = chCb_StockList.getCheckModel().getCheckedItems();
+        AccountsCollection.currentAccount.watchList = new ArrayList<>(selectedStockWatchList);
+        AccountsCollection.WriteToJson();
+        return true;
     }
 }

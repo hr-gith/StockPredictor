@@ -20,6 +20,7 @@ public class AccountsCollection {
     private static final String filename = "Accounts.json";
 
     public static ArrayList<Account> accounts = new ArrayList<Account>();
+    public static Account currentAccount;
 
     public void LoadAccounts() {
 
@@ -32,7 +33,6 @@ public class AccountsCollection {
                 // whole account
                 // list
             }
-
         } catch (Exception e) {
             System.out.println("File not found" + e.getStackTrace());
         }
@@ -65,9 +65,11 @@ public class AccountsCollection {
         // Search the ArrayList
         for(Account account : accounts){
             if(em.toLowerCase().equals(account.email.toLowerCase()) && pwd.equals(account.password)){
+                AccountsCollection.currentAccount = account;
                 return true;
             }
         }
         return false;
     }
+
 }

@@ -6,6 +6,8 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ComboBox?>
 <?import org.controlsfx.control.CheckComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
 
 <BorderPane fx:controller="controllers.PredictorController"
             xmlns:fx="http://javafx.com/fxml" >
@@ -37,6 +39,12 @@
             <padding>
                 <Insets left="10" right="10" bottom="10" top="10"/>
             </padding>
+
+            <Label text="Watch List" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <CheckComboBox fx:id="chCb_StockList" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="1"></CheckComboBox>
+            <ListView fx:id="listView" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+            <Button fx:id="AddFav" text="Add to Favourites" GridPane.rowIndex="3" GridPane.columnIndex="1" onAction="#saveToJson" />
 
         </GridPane>
     </right>
