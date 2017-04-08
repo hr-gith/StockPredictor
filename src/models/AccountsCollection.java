@@ -10,9 +10,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-/**
- * Created by hamideh on 02/03/2017.
- */
+
 public class AccountsCollection {
     private static final Type ACCOUNT_TYPE = new TypeToken<List<Account>>() {
     }.getType();
@@ -29,9 +27,7 @@ public class AccountsCollection {
             File f = new File(filename);
             if (f.exists()) {
                 JsonReader reader = new JsonReader(new FileReader(filename));
-                accounts = gson.fromJson(reader, ACCOUNT_TYPE); // contains the
-                // whole account
-                // list
+                accounts = gson.fromJson(reader, ACCOUNT_TYPE); // contains the whole account list
             }
         } catch (Exception e) {
             System.out.println("File not found" + e.getStackTrace());

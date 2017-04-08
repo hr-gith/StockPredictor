@@ -35,16 +35,16 @@
     </center>
     <right>
         <!-- watch list-->
-        <GridPane style="-fx-background-color: gray; -fx-pref-width: 300" vgap="20" hgap="10">
+        <GridPane fx:id="gridpanewatchlist" style="-fx-background-color: gray; -fx-pref-width: 300" vgap="20" hgap="10">
             <padding>
                 <Insets left="10" right="10" bottom="10" top="10"/>
             </padding>
 
             <Label text="Watch List" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
             <CheckComboBox fx:id="chCb_StockList" style="-fx-pref-width: 220" GridPane.rowIndex="1" GridPane.columnIndex="1"></CheckComboBox>
-            <ListView fx:id="listView" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <ListView fx:id="listView" GridPane.columnIndex="1" GridPane.rowIndex="2"  />
 
-            <Button fx:id="AddFav" text="Add to Favourites" GridPane.rowIndex="3" GridPane.columnIndex="1" onAction="#saveToJson" />
+            <Button fx:id="AddFav" text="Add to Favourites" GridPane.rowIndex="3" GridPane.columnIndex="1" onAction="#saveStocklistToJson" />
 
         </GridPane>
     </right>

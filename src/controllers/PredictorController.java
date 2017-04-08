@@ -13,16 +13,18 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import models.*;
 import org.controlsfx.control.CheckComboBox;
 import javafx.scene.control.ListView;
-import javafx.util.Callback;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.cell.ComboBoxListCell;
-
+import java.time.LocalDate;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import javafx.scene.control.*;
+
 
 public class PredictorController implements Initializable{
     public Stock currentStock;
@@ -35,6 +37,7 @@ public class PredictorController implements Initializable{
     public HashMap<String, String> stocksDOW;
     public ObservableList<String> stockWatchList ;
     public ObservableList<String> selectedStockWatchList;
+    public GridPane gridpanewatchlist;
 
     @FXML
     private DatePicker datePickerFrom;
@@ -54,6 +57,7 @@ public class PredictorController implements Initializable{
     private ListView listView;
 
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         errorMessage = "";
@@ -68,9 +72,10 @@ public class PredictorController implements Initializable{
             }
         });
 
-        //initializing stock watch list
+        /* initializing stock watch list
         stockWatchList = FXCollections.observableArrayList();
         List<String> list = new ArrayList<String>();
+
         stockWatchList.addAll("Apple","American Express","Boeing","Caterpillar","Cisco Systems","Chevron","Coca-Cola",
                 "DuPont","ExxonMobil","General Electric","Goldman Sachs","Home Depot","IBM","Intel","Johnson & Johnson",
                 "JPMorgan Chase","McDonald's","3M Company","Merck","Microsoft","Nike","Pfizer","Procter & Gamble","The Travelers",
@@ -84,6 +89,13 @@ public class PredictorController implements Initializable{
             }
         });
 
+        adding the existing elements of watchlist in the current user to the view
+        List<String> watchlist = new ArrayList<String>();
+        watchlist = AccountsCollection.currentAccount.getWatchList();
+        for ( String w : watchlist ){
+            chCb_StockList.getCheckModel().check(w);
+        } */
+
         //initializing DOW 30 Stocks
         setDowStocks();
         List<String> stockList= new ArrayList<>();
@@ -91,6 +103,7 @@ public class PredictorController implements Initializable{
         for (Map.Entry<String, String> entry : stocksDOW.entrySet()) {
             str = String.format("%-10s", entry.getKey());
             stockList.add(str + entry.getValue().trim());
+
         }
         cob_stocks.getItems().addAll(stockList);
         cob_stocks.setVisibleRowCount(4);
@@ -100,7 +113,35 @@ public class PredictorController implements Initializable{
                 updatePredictionPage();
             }
         });
+
+
+        // initializing stock watch list
+        setDowStocks();
+        List<String> stockWatchList= new ArrayList<>();
+        String str1;
+        for (Map.Entry<String, String> entry : stocksDOW.entrySet()) {
+            str1 = String.format("%-10s", entry.getKey());
+            stockWatchList.add(str1 + entry.getValue().trim());
+        }
+        chCb_StockList.getItems().addAll(stockWatchList);
+        chCb_StockList.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
+            public void onChanged(ListChangeListener.Change c) {
+                updateStockListSection();
+            }
+        });
+
+        //adding the existing elements of watchlist in the current user to the view
+        List<String> watchlist = new ArrayList<String>();
+        watchlist = AccountsCollection.currentAccount.getWatchList();
+        for ( String w : watchlist ){
+            chCb_StockList.getCheckModel().check(w);
+        }
+
+        adviceForStockList();
+
     }
+
+
 
     @FXML
     public void onChangeDateRange(ActionEvent e){
@@ -115,7 +156,7 @@ public class PredictorController implements Initializable{
 
     public void setDowStocks(){
         stocksDOW = new HashMap<>();
-        stocksDOW.put("Apple" , "AAPL");
+        stocksDOW.put("AAPL", "Apple");
         stocksDOW.put("AXP" , "American Express");
         stocksDOW.put("BA" , "Boeing");
         stocksDOW.put("CAT" , "Caterpillar");
@@ -187,8 +228,23 @@ public class PredictorController implements Initializable{
 
     public void updateStockListSection(){
         selectedStockWatchList = chCb_StockList.getCheckModel().getCheckedItems();
-        listView.setItems(selectedStockWatchList);
-        listView.setCellFactory(ComboBoxListCell.forListView(selectedStockWatchList));
+        ObservableList<String> watchListWithAdvice = adviceForStockList();
+        listView.setItems(watchListWithAdvice);
+        listView.setCellFactory(ComboBoxListCell.forListView(watchListWithAdvice));
+
+        listView.setCellFactory(l -> new ListCell<String>() {
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                    setText(item);
+                    setFont(Font.font("Courier New"));
+                   // System.out.println(javafx.scene.text.Font.getFamilies());
+
+            }
+
+        });
 
     }
 
@@ -215,10 +271,41 @@ public class PredictorController implements Initializable{
         }
     }
 
-    public boolean saveToJson(){
+    public boolean saveStocklistToJson(){
         selectedStockWatchList = chCb_StockList.getCheckModel().getCheckedItems();
         AccountsCollection.currentAccount.watchList = new ArrayList<>(selectedStockWatchList);
         AccountsCollection.WriteToJson();
         return true;
+    }
+
+    // get advice for stock list
+    public  ObservableList<String> adviceForStockList(){
+
+        ArrayList<String> adviceList = new ArrayList<>();
+        for(Integer i=0; i< selectedStockWatchList.size();i++){
+            String[] s= new String[selectedStockWatchList.size()];
+            s[i] = selectedStockWatchList.get(i);
+            String[] stockInfo = s[i].split(" +");
+            currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+            ArrayList<Integer> indicators = new ArrayList<Integer>();
+            indicators.add(20);
+            indicators.add(100);
+            predictor = new Predictor(currentStock, indicators);
+            LineChart<String, Number> maChart = predictor.getMovingAverageChart(LocalDate.now().minusMonths(12), LocalDate.now());
+            if (maChart != null) {
+                    // Advice should be created
+                    String advice = predictor.predict();
+                    String show = String.format("%-6s", stockInfo[0]) + String.format("%-22s", stockInfo[1])+ advice;
+                adviceList.add(show);
+                 /*   Label lbAdvice = new Label("  Advice: " + advice);
+                gridpanewatchlist.setConstraints(lbAdvice, 1, i+4);
+                gridpanewatchlist.getChildren().add(lbAdvice);
+                */
+
+            }
+
+        }
+
+        return FXCollections.observableList(adviceList);
     }
 }

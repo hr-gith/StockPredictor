@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by hamideh on 24/02/2017.
@@ -11,6 +12,7 @@ public class Account {
     public String email;
     public String password;
     public ArrayList<String> watchList= new ArrayList<String>();
+    //public HashMap<String,String> watchList = new HashMap<>();
 
     public String getFname() {
         return Fname;

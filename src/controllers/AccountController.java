@@ -15,7 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import models.AccountsCollection;
-
+import java.util.ArrayList;
 import java.io.IOException;
 
 /**
@@ -81,6 +81,7 @@ public class AccountController extends Application {
                     ac.LoadAccounts();
                     Boolean match = ac.SearchAccounts(user.getText(), LoginpwBox.getText());
                     if (match.equals(true)){
+
                         // redirect to main page of application
                         Parent root = null;
                         try {

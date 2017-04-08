@@ -168,5 +168,6 @@ public class Predictor {
         movingAverageChart.getData().add(newSeries);
         movingAverageChart.setCreateSymbols(false);
         return movingAverageChart;
+
     }
 }
