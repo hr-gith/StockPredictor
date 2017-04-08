@@ -13,10 +13,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import models.CSVStockInfoStrategy;
+import models.CsvFileStockInfoStrategy;
+import models.YahooApiStockInfoStrategy;
 import models.Predictor;
 import models.Stock;
-import models.YahooAPIStockInfoStrategy;
 import org.controlsfx.control.CheckComboBox;
 
 import java.net.URL;
@@ -155,8 +155,8 @@ public class PredictorController implements Initializable{
         String[] stockInfo = cob_stocks.getSelectionModel().getSelectedItem().split(" +");
         if (stockInfo.length != 0)
             //TO-DO: change to yahoo API strategy
-            //currentStock = new Stock(stockInfo[0] , stockInfo[1] , new YahooAPIStockInfoStrategy());
-            currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+            currentStock = new Stock(stockInfo[0] , stockInfo[1] , new YahooApiStockInfoStrategy());
+            //currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CsvFileStockInfoStrategy());
         else
             currentStock = null;
     }

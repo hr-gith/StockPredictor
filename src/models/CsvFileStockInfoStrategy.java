@@ -10,7 +10,7 @@ import java.util.TreeMap;
 /**
  * Created by hamideh on 28/03/2017.
  */
-public class YahooApiCsvStockInfoStrategy implements StockInfoStrategy {
+public class CsvFileStockInfoStrategy implements StockInfoStrategy {
 
     public TreeMap<LocalDate,Double> getData(String name, String symbol){
         //TO Store Key as date and value as price
