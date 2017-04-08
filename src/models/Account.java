@@ -1,5 +1,7 @@
 package models;
 
+import java.util.ArrayList;
+
 /**
  * Created by hamideh on 24/02/2017.
  */
@@ -8,6 +10,7 @@ public class Account {
     public String Lname;
     public String email;
     public String password;
+    public ArrayList<String> watchList= new ArrayList<String>();
 
     public String getFname() {
         return Fname;
@@ -40,4 +43,8 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public ArrayList<String> getWatchList(){return watchList;}
+
+    public void setWatchList(ArrayList<String> watchList){this.watchList = watchList;}
 }

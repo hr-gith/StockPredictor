@@ -78,6 +78,19 @@ public class RegisterController extends Application {
         grid.getChildren().add(validationLabel);
         validationLabel.setTextFill(Color.web("#FF0000"));
 
+        // Defining the login button
+        Button backBtn = new Button("Back to the login page");
+        GridPane.setConstraints(backBtn, 0, 7,3,1);
+        grid.getChildren().add(backBtn);
+
+        //Setting an action for the login button
+        backBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                (new AccountController()).start(primaryStage);
+            }
+        });
+
         // Setting action for Submit button
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -102,18 +115,6 @@ public class RegisterController extends Application {
                     validationLabel.setText("Registration is successfully done");
                     validationLabel.setTextFill(Color.web("#008000"));
 
-                    // Defining the login button
-                    Button backBtn = new Button("Back to the login page");
-                    GridPane.setConstraints(backBtn, 0, 7,3,1);
-                    grid.getChildren().add(backBtn);
-
-                    //Setting an action for the Clear button
-                    backBtn.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent e) {
-                            (new AccountController()).start(primaryStage);
-                        }
-                    });
                 }
             }
         });
