@@ -20,9 +20,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.cell.ComboBoxListCell;
 import java.time.LocalDate;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 import javafx.scene.control.*;
 
 
@@ -71,30 +69,6 @@ public class PredictorController implements Initializable{
                 updatePredictionPage();
             }
         });
-
-        /* initializing stock watch list
-        stockWatchList = FXCollections.observableArrayList();
-        List<String> list = new ArrayList<String>();
-
-        stockWatchList.addAll("Apple","American Express","Boeing","Caterpillar","Cisco Systems","Chevron","Coca-Cola",
-                "DuPont","ExxonMobil","General Electric","Goldman Sachs","Home Depot","IBM","Intel","Johnson & Johnson",
-                "JPMorgan Chase","McDonald's","3M Company","Merck","Microsoft","Nike","Pfizer","Procter & Gamble","The Travelers",
-                "UnitedHealth","United Technologies","Visa","Verizon","Wal-Mart","Walt Disney");
-
-        ObservableList<String> observableList = FXCollections.observableList(list);
-        chCb_StockList.getItems().addAll(stockWatchList);
-        chCb_StockList.getCheckModel().getCheckedItems().addListener(new ListChangeListener() {
-            public void onChanged(ListChangeListener.Change c) {
-                updateStockListSection();
-            }
-        });
-
-        adding the existing elements of watchlist in the current user to the view
-        List<String> watchlist = new ArrayList<String>();
-        watchlist = AccountsCollection.currentAccount.getWatchList();
-        for ( String w : watchlist ){
-            chCb_StockList.getCheckModel().check(w);
-        } */
 
         //initializing DOW 30 Stocks
         setDowStocks();
@@ -220,8 +194,8 @@ public class PredictorController implements Initializable{
         String[] stockInfo = cob_stocks.getSelectionModel().getSelectedItem().split(" +");
         if (stockInfo.length != 0)
             //TO-DO: change to yahoo API strategy
-            //currentStock = new Stock(stockInfo[0] , stockInfo[1] , new YahooAPIStockInfoStrategy());
-            currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+            //currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+            currentStock = new Stock(stockInfo[0] , new YahooAPIStockInfoStrategy(),LocalDate.now().minusMonths(12), LocalDate.now() );
         else
             currentStock = null;
     }
@@ -240,7 +214,6 @@ public class PredictorController implements Initializable{
 
                     setText(item);
                     setFont(Font.font("Courier New"));
-                   // System.out.println(javafx.scene.text.Font.getFamilies());
 
             }
 
@@ -286,7 +259,8 @@ public class PredictorController implements Initializable{
             String[] s= new String[selectedStockWatchList.size()];
             s[i] = selectedStockWatchList.get(i);
             String[] stockInfo = s[i].split(" +");
-            currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+           // currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+            currentStock = new Stock(stockInfo[0] , new YahooAPIStockInfoStrategy(),LocalDate.now().minusMonths(12), LocalDate.now() );
             ArrayList<Integer> indicators = new ArrayList<Integer>();
             indicators.add(20);
             indicators.add(100);
@@ -297,10 +271,6 @@ public class PredictorController implements Initializable{
                     String advice = predictor.predict();
                     String show = String.format("%-6s", stockInfo[0]) + String.format("%-22s", stockInfo[1])+ advice;
                 adviceList.add(show);
-                 /*   Label lbAdvice = new Label("  Advice: " + advice);
-                gridpanewatchlist.setConstraints(lbAdvice, 1, i+4);
-                gridpanewatchlist.getChildren().add(lbAdvice);
-                */
 
             }
 
