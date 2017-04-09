@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.TreeMap;
 
 /**
- * Created by hamideh on 28/03/2017.
+ * @author Shivaraj , Sushma
  */
 public class YahooAPIStockInfoStrategy implements StockInfoStrategy {
     TreeMap<LocalDate,Double> stockKeyValuePair= new TreeMap<LocalDate,Double>();
@@ -18,17 +18,16 @@ public class YahooAPIStockInfoStrategy implements StockInfoStrategy {
 
         //stockKeyValuePair=stockData(startDate,endDate,symbol);
         //TO-DO: Connecting to API
-        int startDay = startDate.getDayOfMonth();
-        int startMonth = startDate.getMonthValue()-1;
+        int startDay = startDate.getDayOfMonth()-1;
+        int startMonth = startDate.getMonthValue();
         int startYear = startDate.getYear();
         //System.out.println(startyear);
 
 
-        int endDay = endDate.getDayOfMonth();
-        int endMonth = endDate.getMonthValue()-1;
+        int endDay = endDate.getDayOfMonth()-1;
+        int endMonth = endDate.getMonthValue();
         int endYear = endDate.getYear();
-        //String url ="http://ichart.finance.yahoo.com/table.csv?s=symbol&d=0&e=28&f=2010&g=d&a=3&b=12&c=1996&ignore=.csv";
-        //String url ="http://ichart.finance.yahoo.com/table.csv?s=symbol&d=endMonth&e=endDay&f=endYear&g=d&a=startMonth&b=startDay&c=startYear&ignore=.csv";
+       
         String url ="http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&d="+endMonth+"&e="+endDay+"&f="+endYear+"&g=d&a="+startMonth+"&b="+startDay+"&c="+startYear+"&ignore=.csv";
 
         // Create a URL and open a connection
@@ -54,12 +53,8 @@ public class YahooAPIStockInfoStrategy implements StockInfoStrategy {
 
             while (inputLine  != null) {
 
-                //Prints all the data just for testing -remove it later
-                //System.out.println(inputLine);
-                String [] splitdata= inputLine.split(",");
-
-
-                stockKeyValuePair.put(LocalDate.parse(splitdata[0]), Double.parseDouble(splitdata[4]));
+            	String [] splitdata= inputLine.split(",");
+            	stockKeyValuePair.put(LocalDate.parse(splitdata[0]), Double.parseDouble(splitdata[4]));
                 inputLine =in.readLine();
             }
 

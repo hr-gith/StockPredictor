@@ -192,10 +192,12 @@ public class PredictorController implements Initializable{
 
     public void setCurrentStock(){
         String[] stockInfo = cob_stocks.getSelectionModel().getSelectedItem().split(" +");
+        dateFrom = datePickerFrom.getValue();
+        dateTo = datePickerTo.getValue();
         if (stockInfo.length != 0)
             //TO-DO: change to yahoo API strategy
             //currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
-            currentStock = new Stock(stockInfo[0] , new YahooAPIStockInfoStrategy(),LocalDate.now().minusMonths(12), LocalDate.now() );
+            currentStock = new Stock(stockInfo[0] , new YahooAPIStockInfoStrategy(),dateFrom,dateTo);
         else
             currentStock = null;
     }
@@ -263,7 +265,7 @@ public class PredictorController implements Initializable{
                 s[i] = selectedStockWatchList.get(i);
                 String[] stockInfo = s[i].split(" +");
                 // currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
-                currentStock = new Stock(stockInfo[0], new YahooAPIStockInfoStrategy(), LocalDate.now().minusMonths(12), LocalDate.now());
+                currentStock = new Stock(stockInfo[0], new YahooAPIStockInfoStrategy(),LocalDate.now().minusMonths(12), LocalDate.now());
                 ArrayList<Integer> indicators = new ArrayList<Integer>();
                 indicators.add(20);
                 indicators.add(100);
