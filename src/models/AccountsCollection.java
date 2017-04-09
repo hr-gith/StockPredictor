@@ -68,4 +68,15 @@ public class AccountsCollection {
         return false;
     }
 
+    public boolean SearchAccounts(String em){
+        // Search the ArrayList
+        for(Account account : accounts){
+            if(em.toLowerCase().equals(account.email.toLowerCase())){
+                AccountsCollection.currentAccount = account;
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

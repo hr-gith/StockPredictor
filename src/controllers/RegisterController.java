@@ -110,11 +110,17 @@ public class RegisterController extends Application {
                 else{
                     AccountsCollection ac = new AccountsCollection();
                     ac.LoadAccounts();
-                    AccountsCollection.Add(name.getText(),lastName.getText(),email.getText(),pwBox.getText());
-                    AccountsCollection.WriteToJson();
-                    validationLabel.setText("Registration is successfully done");
-                    validationLabel.setTextFill(Color.web("#008000"));
+                    Boolean match = ac.SearchAccounts(email.getText());
 
+                    if(match){
+                        validationLabel.setText("Account already exists. Please use a different email.");
+                    }
+                    else {
+                        AccountsCollection.Add(name.getText(), lastName.getText(), email.getText(), pwBox.getText());
+                        AccountsCollection.WriteToJson();
+                        validationLabel.setText("Registration is successfully done");
+                        validationLabel.setTextFill(Color.web("#008000"));
+                    }
                 }
             }
         });

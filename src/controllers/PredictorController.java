@@ -255,25 +255,27 @@ public class PredictorController implements Initializable{
     public  ObservableList<String> adviceForStockList(){
 
         ArrayList<String> adviceList = new ArrayList<>();
-        for(Integer i=0; i< selectedStockWatchList.size();i++){
-            String[] s= new String[selectedStockWatchList.size()];
-            s[i] = selectedStockWatchList.get(i);
-            String[] stockInfo = s[i].split(" +");
-           // currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
-            currentStock = new Stock(stockInfo[0] , new YahooAPIStockInfoStrategy(),LocalDate.now().minusMonths(12), LocalDate.now() );
-            ArrayList<Integer> indicators = new ArrayList<Integer>();
-            indicators.add(20);
-            indicators.add(100);
-            predictor = new Predictor(currentStock, indicators);
-            LineChart<String, Number> maChart = predictor.getMovingAverageChart(LocalDate.now().minusMonths(12), LocalDate.now());
-            if (maChart != null) {
+
+        if(selectedStockWatchList!=null)
+        {
+            for (Integer i = 0; i < selectedStockWatchList.size(); i++) {
+                String[] s = new String[selectedStockWatchList.size()];
+                s[i] = selectedStockWatchList.get(i);
+                String[] stockInfo = s[i].split(" +");
+                // currentStock = new Stock(stockInfo[0] , stockInfo[1] , new CSVStockInfoStrategy());
+                currentStock = new Stock(stockInfo[0], new YahooAPIStockInfoStrategy(), LocalDate.now().minusMonths(12), LocalDate.now());
+                ArrayList<Integer> indicators = new ArrayList<Integer>();
+                indicators.add(20);
+                indicators.add(100);
+                predictor = new Predictor(currentStock, indicators);
+                LineChart<String, Number> maChart = predictor.getMovingAverageChart(LocalDate.now().minusMonths(12), LocalDate.now());
+                if (maChart != null) {
                     // Advice should be created
                     String advice = predictor.predict();
-                    String show = String.format("%-6s", stockInfo[0]) + String.format("%-22s", stockInfo[1])+ advice;
-                adviceList.add(show);
-
+                    String show = String.format("%-6s", stockInfo[0]) + String.format("%-22s", stockInfo[1]) + advice;
+                    adviceList.add(show);
+                }
             }
-
         }
 
         return FXCollections.observableList(adviceList);
