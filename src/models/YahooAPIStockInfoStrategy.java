@@ -10,6 +10,8 @@ import java.util.TreeMap;
 
 /**
  * @author Shivaraj , Sushma
+ //Description: This class connects to YahooAPI to fetch the data in real time
+ Created on 07/04/2017
  */
 public class YahooAPIStockInfoStrategy implements StockInfoStrategy {
     TreeMap<LocalDate,Double> stockKeyValuePair= new TreeMap<LocalDate,Double>();
@@ -28,10 +30,12 @@ public class YahooAPIStockInfoStrategy implements StockInfoStrategy {
         int endMonth = endDate.getMonthValue();
         int endYear = endDate.getYear();
        
-        String url ="http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&d="+endMonth+"&e="+endDay+"&f="+endYear+"&g=d&a="+startMonth+"&b="+startDay+"&c="+startYear+"&ignore=.csv";
+        
+		String url ="http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&d="+endMonth+"&e="+endDay+"&f="+endYear+"&g=d&a="+startMonth+"&b="+startDay+"&c="+startYear+"&ignore=.csv";
 
         // Create a URL and open a connection
-        URL YahooURL;
+        
+		URL YahooURL;
         try {
             YahooURL = new URL(url);
 
